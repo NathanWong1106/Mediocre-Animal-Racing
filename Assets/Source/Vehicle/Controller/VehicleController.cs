@@ -35,11 +35,13 @@ public class VehicleController : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets wheel steering and motor torque based on user input
+    /// Sets wheel steering, motor torque, and brake torque based on user input
     /// <see cref="https://docs.unity3d.com/Manual/WheelColliderTutorial.html"/>
     /// </summary>
     private void UpdateMovement()
     {
+        Vector3 localVelocity = transform.InverseTransformDirection(vehicle.rigidbody.velocity);
+
         foreach (Axle axle in vehicle.axles)
         {
             if (axle.steering)
@@ -49,27 +51,32 @@ public class VehicleController : MonoBehaviour
             }
             if (axle.motor)
             {
-                if(axle.handBrake)
+                axle.left.motorTorque = VehicleSettings.maxMotorTorque * InputHelper.Vertical;
+                axle.right.motorTorque = VehicleSettings.maxMotorTorque * InputHelper.Vertical;
+            }
+            if (axle.braking)
+            {
+                if(localVelocity.z > 0 && InputHelper.Vertical < 0)
                 {
-                    axle.left.motorTorque = InputHelper.HandBrake ? 0f : VehicleSettings.maxMotorTorque * InputHelper.Vertical;
-                    axle.right.motorTorque = InputHelper.HandBrake ? 0f : VehicleSettings.maxMotorTorque * InputHelper.Vertical;
+                    axle.left.brakeTorque = VehicleSettings.maxBrakeTorque;
+                    axle.right.brakeTorque = VehicleSettings.maxBrakeTorque;
+                }
+                else if (localVelocity.z < 0 && InputHelper.Vertical > 0)
+                {
+                    axle.left.brakeTorque = VehicleSettings.maxBrakeTorque;
+                    axle.right.brakeTorque = VehicleSettings.maxBrakeTorque;
                 }
                 else
                 {
-                    axle.left.motorTorque = VehicleSettings.maxMotorTorque * InputHelper.Vertical;
-                    axle.right.motorTorque = VehicleSettings.maxMotorTorque * InputHelper.Vertical;
+                    axle.left.brakeTorque = 0f;
+                    axle.right.brakeTorque = 0f;
                 }
             }
-/*            if(axle.braking)
-            {
-                axle.left.brakeTorque = InputHelper.Vertical < 0 ? VehicleSettings.maxBrakeTorque : 0;
-                axle.right.brakeTorque = InputHelper.Vertical < 0 ? VehicleSettings.maxBrakeTorque : 0;
-            }*/
-
             ApplyLocalPositionToVisuals(axle.left);
             ApplyLocalPositionToVisuals(axle.right);   
-            
         }
+
+        vehicle.rigidbody.AddForce(Vector3.down * 300);
     }
 
     /// <summary>
