@@ -4,13 +4,39 @@ using UnityEngine;
 
 namespace Racing.Vehicle.Common
 {
+    /// <summary>
+    /// Contains all variables pertaining to the vehicle
+    /// </summary>
     public static class VehicleSettings
     {
-        public static float maxMotorTorque = 600f; // maximum torque the motor can apply to a wheel
-        public static float maxSteerAngle = 20f; // maximum steer angle a wheel can have
-        public static float maxBrakeTorque = 15000f; // maximum torque the barke can apply to a wheel
-        public static float turnLerp = 0.6f; //Amount of time to lerp to maxSteerAngle
-        public static float jumpForce = 18000f;
-        public static float rideHeight = 1f;
+        /// <summary>
+        /// Maximum torque the motor can apply to a wheel
+        /// </summary>
+        public static readonly float maxMotorTorque = 600f;
+
+        /// <summary>
+        /// Maximum steer angle a wheel can have
+        /// </summary>
+        public static readonly float maxSteerAngle = 20f;
+
+        /// <summary>
+        /// Maximum torque the brake can apply to a wheel
+        /// </summary>
+        public static readonly float maxBrakeTorque = 15000f;
+
+        /// <summary>
+        /// Amount of time to lerp to maxSteerAngle
+        /// </summary>
+        public static readonly float turnLerp = 0.6f; 
+
+        /// <summary>
+        /// Amount of upward force to jump with
+        /// </summary>
+        public static readonly float jumpForce = 18000f;
+
+        /// <summary>
+        /// Distance between the floor of the vehicle and the bottom of its wheels
+        /// </summary>
+        public static readonly float rideHeight = 1f;
     }
 }

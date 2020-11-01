@@ -691,6 +691,7 @@ GameObject:
   - component: {fileID: 997190844933845119}
   - component: {fileID: 997190844933845104}
   - component: {fileID: 997190844933845118}
+  - component: {fileID: 1882992006}
   m_Layer: 0
   m_Name: Vehicle Body
   m_TagString: Untagged
@@ -828,6 +829,18 @@ MonoBehaviour:
     steering: 0
     braking: 1
     handBrake: 0
+--- !u!114 &1882992006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 997190844933845109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a7fb4ed0b6ebf45a07077903e21567, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &997190844990705738
 GameObject:
   m_ObjectHideFlags: 0

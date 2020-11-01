@@ -11,7 +11,7 @@ public class VehicleController : MonoBehaviour
 {
     Vehicle vehicle;
 
-    private void Awake()
+    private void Start()
     {
         vehicle = GetComponent<Vehicle>();
     }
@@ -21,6 +21,14 @@ public class VehicleController : MonoBehaviour
         Jump();
     }
 
+    private void FixedUpdate()
+    {
+        UpdateMovement();
+    }
+
+    /// <summary>
+    /// Checks for valid jump input and applies an upward force on the vehicle rigidbody
+    /// </summary>
     private void Jump()
     {
         if (InputHelper.Jump && Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), VehicleSettings.rideHeight))
@@ -29,13 +37,9 @@ public class VehicleController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        UpdateMovement();
-    }
-
     /// <summary>
-    /// Sets wheel steering, motor torque, and brake torque based on user input
+    /// Sets wheel steering, motor torque, and brake torque based on user input.
+    /// Updates visual elements of wheel colliders
     /// <see cref="https://docs.unity3d.com/Manual/WheelColliderTutorial.html"/>
     /// </summary>
     private void UpdateMovement()
@@ -56,7 +60,8 @@ public class VehicleController : MonoBehaviour
             }
             if (axle.braking)
             {
-                if(localVelocity.z > 0 && InputHelper.Vertical < 0)
+                // 0.01f accounts for small amount of forward velocity still carried by the rigidbody
+                if(localVelocity.z > 0.01f && InputHelper.Vertical < 0)
                 {
                     axle.left.brakeTorque = VehicleSettings.maxBrakeTorque;
                     axle.right.brakeTorque = VehicleSettings.maxBrakeTorque;
@@ -82,7 +87,7 @@ public class VehicleController : MonoBehaviour
     /// <summary>
     /// Applies Wheel Collider rotation and position to their visual elements
     /// </summary>
-    /// <param name="collider"></param>
+    /// <param name="collider">Wheel Collider that the visual is attached to</param>
     private void ApplyLocalPositionToVisuals(WheelCollider collider)
     {
         if (collider.transform.childCount == 0)
