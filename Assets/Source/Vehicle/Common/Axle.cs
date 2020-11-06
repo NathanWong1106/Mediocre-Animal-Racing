@@ -14,9 +14,22 @@ namespace Racing.Vehicle.Common
     {
         public WheelCollider left;
         public WheelCollider right;
+        public float lerpSpeed;
         public bool motor; // attached to a motor?
         public bool steering; // steer angle applicable?
         public bool braking; // brake applicable?
-        public bool handBrake; // handbrake applicable?
+
+        [NonSerialized] public float targetLerpAngle;
+        [NonSerialized] public float lastTargetLerpAngle;
+        [NonSerialized] public float startLerpAngle;
+        [NonSerialized] public bool isLerping = false;
+        [NonSerialized] public float time = 0;
+
+        public static void InitAxleLerp(Axle axle, float initAngle)
+        {
+            axle.targetLerpAngle = initAngle;
+            axle.lastTargetLerpAngle = initAngle;
+            axle.startLerpAngle = initAngle;
+        }
     }
 }

@@ -7,6 +7,11 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Contains methods pertaining to player control over vehicles
+/// </summary>
+
+[RequireComponent(typeof(Vehicle))]
 public class VehicleController : MonoBehaviour
 {
     Vehicle vehicle;
@@ -50,8 +55,7 @@ public class VehicleController : MonoBehaviour
         {
             if (axle.steering)
             {
-                axle.left.steerAngle = Mathf.Lerp(axle.left.steerAngle, VehicleSettings.maxSteerAngle * InputHelper.Horizontal, VehicleSettings.turnLerp);
-                axle.right.steerAngle = Mathf.Lerp(axle.right.steerAngle, VehicleSettings.maxSteerAngle * InputHelper.Horizontal, VehicleSettings.turnLerp);
+                axle.targetLerpAngle = VehicleSettings.maxSteerAngle * InputHelper.Horizontal;
             }
             if (axle.motor)
             {

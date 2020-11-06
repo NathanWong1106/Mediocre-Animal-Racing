@@ -7,17 +7,16 @@ using UnityEngine;
 namespace Racing.Map.Tracking
 {
     /// <summary>
-    /// Tag for checkpoint colliders
+    /// Tag for checkpoint triggers
     /// </summary>
     public class Checkpoint : MonoBehaviour
     {
-        public bool isFinish = false;
-        public event Action<Player> CrossedFinish;
-
         public void AddCheckpoint(Player player)
         {
+            if (player.checkpoints.Contains(this))
+                return;
+
             player.checkpoints.Add(this);
-            Debug.Log(player.checkpoints);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -27,11 +26,6 @@ namespace Racing.Map.Tracking
             if (player)
             {
                 AddCheckpoint(player);
-
-                if (isFinish)
-                {
-                    CrossedFinish.Invoke(player);
-                }
             }
         }
     }
