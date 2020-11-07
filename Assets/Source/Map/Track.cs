@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Racing.User;
+using System;
 
 namespace Racing.Map
 {
@@ -14,39 +15,28 @@ namespace Racing.Map
     {
         public List<Checkpoint> checkpoints { get; set; } = new List<Checkpoint>();
         public Queue<Player> finishers { get; set; } = new Queue<Player>();
-        public FinishLine finishLine { get; set; }
+        public Checkpoint finishLine { get; set; }
         public int laps { get; set; } = 5;
 
         void Start()
         {
             checkpoints = transform.GetComponentsInChildren<Checkpoint>().ToList();
-            finishLine = FindObjectOfType<FinishLine>();
+            finishLine = checkpoints.Find(c => c.isFinish);
 
-            if(checkpoints.Count() == 0 || finishLine == null)
+            if (checkpoints.Count() == 0 || finishLine == null)
             {
                 throw new System.Exception("~Track: No checkpoints or finish line found");
             }
 
-            finishLine.onFinishCrossed += (p) => OnFinishCrossed(p);
+            InitPlayers();
         }
 
-        //TODO: Make sure the player checkpoints are in the same order as the checkpoint positions
-        private void OnFinishCrossed(Player player)
+        private void InitPlayers()
         {
-            var intersection = player.checkpoints.Intersect(checkpoints);
-
-            if(intersection.Count() == checkpoints.Count())
+            foreach (var player in FindObjectsOfType<Player>())
             {
-                player.lapNumber++;
-                Debug.Log(player.lapNumber);
+                player.target = finishLine;
             }
-
-            if(player.lapNumber == laps)
-            {
-                finishers.Enqueue(player);
-            }
-
-            player.checkpoints.Clear();
         }
     }
 }
