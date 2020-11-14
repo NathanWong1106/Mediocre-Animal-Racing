@@ -13,8 +13,9 @@ namespace Racing.AI
     public class AIMovement : MonoBehaviour
     {
 
-        public float Cautiousness = 2f;
-        public float InverseTrackingAccuracy= 20f;
+        private float Cautiousness = 2.5f;
+        private float InverseTrackingAccuracy= 20f;
+        public bool debug = false;
 
         private Track track;
         private Vehicle.Common.Vehicle vehicle;
@@ -40,6 +41,20 @@ namespace Racing.AI
             TranslateTracker();
             EvaluateMovement(CalulateCrossProduct());
             ReevaluteTargetIndex();
+            Ghost();
+        }
+
+        //TODO: add transparency effect on ghost active
+        private void Ghost()
+        {
+            if(Mathf.Abs(transform.InverseTransformDirection(vehicle.rigidbody.velocity).z) < 10f)
+            {
+                vehicle.GetComponent<BoxCollider>().enabled = false;
+            }
+            else
+            {
+                vehicle.GetComponent<BoxCollider>().enabled = true;
+            }
         }
 
         private void TranslateTracker()
@@ -63,11 +78,10 @@ namespace Racing.AI
         private void EvaluateMovement(float cross)
         {
             //Collision avoidance
-            int layer = LayerMask.GetMask(new string[] { "Vehicle" });
             bool rightPossible = false;
             bool leftPossible = false;
             bool toTarget = false;
-            AvoidPossibleCollisions(ref rightPossible, ref leftPossible, ref toTarget, layer);
+            AvoidPossibleCollisions(ref rightPossible, ref leftPossible, ref toTarget);
 
             //Vehicle parameters
             float steerAngle = 0;
@@ -75,7 +89,7 @@ namespace Racing.AI
             float brakeTorque = 0;
 
             //Determine steerAngle
-            if (cross < -2)
+            if (cross < -4)
             {
                 if (leftPossible)
                 {
@@ -83,10 +97,10 @@ namespace Racing.AI
                 }
                 else if (!leftPossible && rightPossible)
                 {
-                    steerAngle = VehicleSettings.maxSteerAngle / 3;
+                    steerAngle = VehicleSettings.maxSteerAngle / 7;
                 }
             }
-            else if (cross > 2 && rightPossible)
+            else if (cross > 4 && rightPossible)
             {
                 if (rightPossible)
                 {
@@ -94,7 +108,7 @@ namespace Racing.AI
                 }
                 else if (!rightPossible && leftPossible)
                 {
-                    steerAngle = -VehicleSettings.maxSteerAngle / 3;
+                    steerAngle = -VehicleSettings.maxSteerAngle / 6;
                 }
             }
 
@@ -105,25 +119,42 @@ namespace Racing.AI
             }
             else
             {
-                brakeTorque = VehicleSettings.maxBrakeTorque / 3;
+                brakeTorque = VehicleSettings.maxBrakeTorque / 2;
             }
 
             UpdateAxles(steerAngle, motorTorque, brakeTorque);
         }
 
-        private void AvoidPossibleCollisions(ref bool rightPossible, ref bool leftPossible, ref bool toTarget, int vehicleLayerMask)
+        private Vector3 GetRaycastAngle(float angle)
         {
-            bool rightHit, leftHit, toTargetHit;
+            return Quaternion.Euler(0, angle, 0) * transform.forward;
+        }
 
-            rightHit = Physics.Raycast(transform.position, transform.right, Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, transform.forward + transform.right, Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, -transform.forward + transform.right, Cautiousness, vehicleLayerMask);
+        private void AvoidPossibleCollisions(ref bool rightPossible, ref bool leftPossible, ref bool toTarget)
+        {
+            int vehicleLayerMask = LayerMask.GetMask(new string[] { "Vehicle" });
+            bool rightHit, leftHit, toTargetHit = false;
 
-            leftHit = Physics.Raycast(transform.position, -transform.right, Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, transform.forward - transform.right, Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, -transform.forward - transform.right, Cautiousness, vehicleLayerMask);
+            rightHit = Physics.Raycast(transform.position, GetRaycastAngle(90), Cautiousness, vehicleLayerMask) ||
+                Physics.Raycast(transform.position, GetRaycastAngle(30), Cautiousness + 1f, vehicleLayerMask) ||
+                Physics.Raycast(transform.position, GetRaycastAngle(135), Cautiousness + 1f, vehicleLayerMask);
 
-            toTargetHit = Physics.Raycast(transform.position, transform.forward, Cautiousness / 2, vehicleLayerMask);
+            leftHit = Physics.Raycast(transform.position, GetRaycastAngle(-90), Cautiousness, vehicleLayerMask) ||
+                Physics.Raycast(transform.position, GetRaycastAngle(-30), Cautiousness + 1f, vehicleLayerMask) ||
+                Physics.Raycast(transform.position, GetRaycastAngle(-135), Cautiousness + 1f, vehicleLayerMask);
+
+            RaycastHit hit;
+            if(Physics.Raycast(transform.position, GetRaycastAngle(0), out hit, Cautiousness + 1f, vehicleLayerMask))
+            {
+                if(transform.InverseTransformDirection(hit.transform.GetComponent<Vehicle.Common.Vehicle>().rigidbody.velocity).z - transform.InverseTransformDirection(vehicle.rigidbody.velocity).z < 0)
+                {
+                    toTargetHit = true;
+                }
+                else
+                {
+                    toTargetHit = false;
+                }
+            }
 
             rightPossible = !rightHit;
             leftPossible = !leftHit;

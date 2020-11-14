@@ -27,7 +27,7 @@ namespace Racing.Vehicle.Common
         /// <summary>
         /// Lerp multiplier to maxSteerAngle
         /// </summary>
-        public static readonly float turnLerp = 10f; 
+        public static readonly float turnLerp = 6f; 
 
         /// <summary>
         /// Amount of upward force to jump with
