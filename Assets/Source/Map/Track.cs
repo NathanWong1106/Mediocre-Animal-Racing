@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Racing.User;
+using Racing.AI;
 using System;
 
 namespace Racing.Map
@@ -14,6 +15,7 @@ namespace Racing.Map
     public class Track : MonoBehaviour
     {
         public List<Checkpoint> checkpoints { get; set; } = new List<Checkpoint>();
+        public List<Waypoint> waypoints = new List<Waypoint>();
         public Queue<Player> finishers { get; set; } = new Queue<Player>();
         public Checkpoint finishLine { get; set; }
         public int laps { get; set; } = 5;

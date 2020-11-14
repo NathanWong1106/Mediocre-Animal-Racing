@@ -17,7 +17,7 @@ namespace Racing.Vehicle.Common
         /// <summary>
         /// Maximum steer angle a wheel can have
         /// </summary>
-        public static readonly float maxSteerAngle = 20f;
+        public static readonly float maxSteerAngle = 25f;
 
         /// <summary>
         /// Maximum torque the brake can apply to a wheel
@@ -25,14 +25,19 @@ namespace Racing.Vehicle.Common
         public static readonly float maxBrakeTorque = 15000f;
 
         /// <summary>
-        /// Amount of time to lerp to maxSteerAngle
+        /// Lerp multiplier to maxSteerAngle
         /// </summary>
-        public static readonly float turnLerp = 0.6f; 
+        public static readonly float turnLerp = 25f; 
 
         /// <summary>
         /// Amount of upward force to jump with
         /// </summary>
         public static readonly float jumpForce = 18000f;
+
+        /// <summary>
+        /// Torque applied to vehicle mid-air
+        /// </summary>
+        public static readonly float airTurnTorque = 4000f;
 
         /// <summary>
         /// Distance between the floor of the vehicle and the bottom of its wheels

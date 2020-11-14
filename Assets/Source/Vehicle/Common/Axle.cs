@@ -14,7 +14,6 @@ namespace Racing.Vehicle.Common
     {
         public WheelCollider left;
         public WheelCollider right;
-        public float lerpSpeed;
         public bool motor; // attached to a motor?
         public bool steering; // steer angle applicable?
         public bool braking; // brake applicable?

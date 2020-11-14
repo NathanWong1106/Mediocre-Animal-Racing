@@ -21,10 +21,9 @@ public class Wheels : MonoBehaviour
         foreach(Axle axle in vehicle.axles)
         {
             RecalculateLerp(axle);
-
             if (axle.isLerping)
             {
-                axle.time += Time.deltaTime * axle.lerpSpeed;
+                axle.time += Time.deltaTime * VehicleSettings.turnLerp;
                 LerpToSteerAngle(axle);
             }
         }

@@ -15,6 +15,8 @@ using UnityEngine.EventSystems;
 public class VehicleController : MonoBehaviour
 {
     Vehicle vehicle;
+    public bool isGrounded = true;
+    public InputType inputType;
 
     private void Start()
     {
@@ -23,7 +25,12 @@ public class VehicleController : MonoBehaviour
 
     private void Update()
     {
-        Jump();
+        if(inputType == InputType.Player)
+        {
+            GroundCheck();
+            Jump();
+        }
+        ReevaluteVisuals();
     }
 
     private void FixedUpdate()
@@ -31,23 +38,63 @@ public class VehicleController : MonoBehaviour
         UpdateMovement();
     }
 
+    private void ReevaluteVisuals()
+    {
+        foreach(Axle axle in vehicle.axles)
+        {
+            ApplyLocalPositionToVisuals(axle.right);
+            ApplyLocalPositionToVisuals(axle.left);
+        }
+    }
+
+    /// <summary>
+    /// Checks if the vehicle is grounded
+    /// </summary>
+    private void GroundCheck()
+    {
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), VehicleSettings.rideHeight))
+            isGrounded = true;
+        else
+            isGrounded = false;
+    }
+
     /// <summary>
     /// Checks for valid jump input and applies an upward force on the vehicle rigidbody
     /// </summary>
     private void Jump()
     {
-        if (InputHelper.Jump && Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), VehicleSettings.rideHeight))
+        if (InputHelper.Jump && isGrounded)
         {
             vehicle.rigidbody.AddForce(Vector3.up * VehicleSettings.jumpForce, ForceMode.Impulse);
         }
     }
 
     /// <summary>
-    /// Sets wheel steering, motor torque, and brake torque based on user input.
-    /// Updates visual elements of wheel colliders
+    /// Calls movement handlers to update vehicle control
     /// <see cref="https://docs.unity3d.com/Manual/WheelColliderTutorial.html"/>
     /// </summary>
     private void UpdateMovement()
+    {
+        vehicle.rigidbody.AddForce(Vector3.down * 300);
+
+        if (inputType == InputType.Player)
+        {
+            ApplyGroundedMovement();
+
+            if (!isGrounded)
+                ApplyAirMovement();
+        }
+/*        else
+        {
+            //Not implemented yet - AI movement
+            throw new NotImplementedException();
+        }*/
+    }
+
+    /// <summary>
+    /// Sets wheel steering, motor torque, and brake torque based on user input.
+    /// </summary>
+    private void ApplyGroundedMovement()
     {
         Vector3 localVelocity = transform.InverseTransformDirection(vehicle.rigidbody.velocity);
 
@@ -64,13 +111,13 @@ public class VehicleController : MonoBehaviour
             }
             if (axle.braking)
             {
-                // 0.01f accounts for small amount of forward velocity still carried by the rigidbody
-                if(localVelocity.z > 0.01f && InputHelper.Vertical < 0)
+                // 0.01f accounts for small amount of velocity still carried by the rigidbody (at this point motorTorque is able to simulate braking)
+                if (localVelocity.z > 0.01f && InputHelper.Vertical < 0)
                 {
                     axle.left.brakeTorque = VehicleSettings.maxBrakeTorque;
                     axle.right.brakeTorque = VehicleSettings.maxBrakeTorque;
                 }
-                else if (localVelocity.z < 0 && InputHelper.Vertical > 0)
+                else if (localVelocity.z < -0.01f && InputHelper.Vertical > 0)
                 {
                     axle.left.brakeTorque = VehicleSettings.maxBrakeTorque;
                     axle.right.brakeTorque = VehicleSettings.maxBrakeTorque;
@@ -81,11 +128,15 @@ public class VehicleController : MonoBehaviour
                     axle.right.brakeTorque = 0f;
                 }
             }
-            ApplyLocalPositionToVisuals(axle.left);
-            ApplyLocalPositionToVisuals(axle.right);   
         }
+    }
 
-        vehicle.rigidbody.AddForce(Vector3.down * 300);
+    /// <summary>
+    /// Applies torque in the y-axis based on user input
+    /// </summary>
+    private void ApplyAirMovement()
+    {
+        vehicle.rigidbody.AddTorque(Vector3.up * VehicleSettings.airTurnTorque * InputHelper.Horizontal);
     }
 
     /// <summary>
