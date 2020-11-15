@@ -9,12 +9,12 @@ using Racing.Util;
 
 namespace Racing.AI
 {
-    [RequireComponent(typeof(VehicleController))]
+    [RequireComponent(typeof(Vehicle.Common.Vehicle))]
     public class AIMovement : MonoBehaviour
     {
 
-        private float Cautiousness = 2.5f;
-        private float InverseTrackingAccuracy= 20f;
+        private float Cautiousness = 3f;
+        private float InverseTrackingAccuracy= 30f;
         public bool debug = false;
 
         private Track track;
@@ -32,7 +32,7 @@ namespace Racing.AI
             
             tracker = GameObject.CreatePrimitive(PrimitiveType.Cube);
             DestroyImmediate(tracker.GetComponent<Collider>());
-            DestroyImmediate(tracker.GetComponent<MeshRenderer>());
+            //DestroyImmediate(tracker.GetComponent<MeshRenderer>());
             tracker.transform.position = track.waypoints[TargetIndex].transform.position;
         }
 
@@ -57,15 +57,21 @@ namespace Racing.AI
             }
         }
 
+        /// <summary>
+        /// Translates tracker along the predefined waypoint path
+        /// </summary>
         private void TranslateTracker()
         {
             if(Vector3.Distance(tracker.transform.position, transform.position) < InverseTrackingAccuracy)
             {
                 tracker.transform.LookAt(track.waypoints[TargetIndex].transform);
-                tracker.transform.Translate(0, 0, (transform.InverseTransformDirection(vehicle.rigidbody.velocity).z + 0.5f) * Time.deltaTime);
+                tracker.transform.Translate(0, 0, (20f) * Time.deltaTime);
             }
         }
 
+        /// <summary>
+        /// Returns the cross product between the tracker and vehicle positions
+        /// </summary>
         private float CalulateCrossProduct()
         {
             Vector3 forward = transform.forward;
@@ -75,6 +81,9 @@ namespace Racing.AI
             return Vector3.Cross(forward, diff).y;
         }
 
+        /// <summary>
+        /// Decides what action/direction to take given the cross product
+        /// </summary>
         private void EvaluateMovement(float cross)
         {
             //Collision avoidance
@@ -89,15 +98,21 @@ namespace Racing.AI
             float brakeTorque = 0;
 
             //Determine steerAngle
+            if (!leftPossible && rightPossible)
+            {
+                steerAngle = VehicleSettings.maxSteerAngle / 15;
+            }
+
+            else if (!rightPossible && leftPossible)
+            {
+                steerAngle = -VehicleSettings.maxSteerAngle / 15;
+            }
+
             if (cross < -4)
             {
                 if (leftPossible)
                 {
                     steerAngle = -VehicleSettings.maxSteerAngle;
-                }
-                else if (!leftPossible && rightPossible)
-                {
-                    steerAngle = VehicleSettings.maxSteerAngle / 7;
                 }
             }
             else if (cross > 4 && rightPossible)
@@ -106,16 +121,12 @@ namespace Racing.AI
                 {
                     steerAngle = VehicleSettings.maxSteerAngle;
                 }
-                else if (!rightPossible && leftPossible)
-                {
-                    steerAngle = -VehicleSettings.maxSteerAngle / 6;
-                }
             }
 
             //Determine throttle
             if (toTarget)
             {
-                motorTorque = VehicleSettings.maxMotorTorque;
+                motorTorque = VehicleSettings.maxMotorTorque * 1.2f;
             }
             else
             {
@@ -125,28 +136,56 @@ namespace Racing.AI
             UpdateAxles(steerAngle, motorTorque, brakeTorque);
         }
 
+        /// <summary>
+        /// Returns an angle relative to the forward transform of the vehicle
+        /// </summary>
         private Vector3 GetRaycastAngle(float angle)
         {
             return Quaternion.Euler(0, angle, 0) * transform.forward;
         }
 
+        /// <summary>
+        /// Produces a series of raycasts returning whether a specified direction should be taken
+        /// </summary>
         private void AvoidPossibleCollisions(ref bool rightPossible, ref bool leftPossible, ref bool toTarget)
         {
             int vehicleLayerMask = LayerMask.GetMask(new string[] { "Vehicle" });
             bool rightHit, leftHit, toTargetHit = false;
 
             rightHit = Physics.Raycast(transform.position, GetRaycastAngle(90), Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(30), Cautiousness + 1f, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(135), Cautiousness + 1f, vehicleLayerMask);
+                Physics.Raycast(transform.position, GetRaycastAngle(30), Cautiousness, vehicleLayerMask) ||
+                Physics.Raycast(transform.position, GetRaycastAngle(135), Cautiousness + 2, vehicleLayerMask);
 
             leftHit = Physics.Raycast(transform.position, GetRaycastAngle(-90), Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(-30), Cautiousness + 1f, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(-135), Cautiousness + 1f, vehicleLayerMask);
+                Physics.Raycast(transform.position, GetRaycastAngle(-30), Cautiousness, vehicleLayerMask) ||
+                Physics.Raycast(transform.position, GetRaycastAngle(-135), Cautiousness + 2, vehicleLayerMask);
 
             RaycastHit hit;
-            if(Physics.Raycast(transform.position, GetRaycastAngle(0), out hit, Cautiousness + 1f, vehicleLayerMask))
+            if(Physics.Raycast(transform.position, GetRaycastAngle(0), out hit, Cautiousness + 5f, vehicleLayerMask))
             {
                 if(transform.InverseTransformDirection(hit.transform.GetComponent<Vehicle.Common.Vehicle>().rigidbody.velocity).z - transform.InverseTransformDirection(vehicle.rigidbody.velocity).z < 0)
+                {
+                    toTargetHit = true;
+                }
+                else
+                {
+                    toTargetHit = false;
+                }
+            }
+            else if (Physics.Raycast(transform.position, GetRaycastAngle(15), out hit, Cautiousness + 2f, vehicleLayerMask))
+            {
+                if (transform.InverseTransformDirection(hit.transform.GetComponent<Vehicle.Common.Vehicle>().rigidbody.velocity).z - transform.InverseTransformDirection(vehicle.rigidbody.velocity).z < 0)
+                {
+                    toTargetHit = true;
+                }
+                else
+                {
+                    toTargetHit = false;
+                }
+            }
+            else if (Physics.Raycast(transform.position, GetRaycastAngle(-15), out hit, Cautiousness + 2f, vehicleLayerMask))
+            {
+                if (transform.InverseTransformDirection(hit.transform.GetComponent<Vehicle.Common.Vehicle>().rigidbody.velocity).z - transform.InverseTransformDirection(vehicle.rigidbody.velocity).z < 0)
                 {
                     toTargetHit = true;
                 }
@@ -161,6 +200,9 @@ namespace Racing.AI
             toTarget = !toTargetHit;
         }
 
+        /// <summary>
+        /// Updates axle parameters with the given paramaters
+        /// </summary>
         private void UpdateAxles(float steerAngle, float motorTorque, float brakeTorque)
         {
             foreach (var axle in vehicle.axles)
@@ -184,6 +226,9 @@ namespace Racing.AI
             }
         }
 
+        /// <summary>
+        /// Increments the target index given the tracker position
+        /// </summary>
         private void ReevaluteTargetIndex()
         {
             if (Vector3.Distance(track.waypoints[TargetIndex].transform.position, tracker.transform.position) < 1)
