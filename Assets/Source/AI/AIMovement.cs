@@ -162,32 +162,6 @@ namespace Racing.AI
                 Debug.Log(steerMultiplier);
 
             steerAngle = VehicleSettings.maxSteerAngle * steerMultiplier;
-/*
-            //Determine steerAngle
-            if (!leftPossible && rightPossible)
-            {
-                steerAngle = VehicleSettings.maxSteerAngle / InverseAvoidancePriority;
-            }
-
-            else if (!rightPossible && leftPossible)
-            {
-                steerAngle = -VehicleSettings.maxSteerAngle / InverseAvoidancePriority;
-            }
-
-            if (cross < -4)
-            {
-                if (leftPossible)
-                {
-                    steerAngle = -VehicleSettings.maxSteerAngle;
-                }
-            }
-            else if (cross > 4 && rightPossible)
-            {
-                if (rightPossible)
-                {
-                    steerAngle = VehicleSettings.maxSteerAngle;
-                }
-            }*/
 
             //Determine throttle
             motorTorque = (1 - brakePriority) * VehicleSettings.maxMotorTorque * ThrottleMultiplier;
