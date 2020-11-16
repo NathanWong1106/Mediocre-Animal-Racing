@@ -1,5 +1,4 @@
-﻿using Racing.AI;
-using Racing.Map.Tracking;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,8 +12,31 @@ namespace Racing.AI
     public class AIMovement : MonoBehaviour
     {
 
+        // Do not exceed 180 or -180
+        private static List<RayCastRepresentation> RayCasts = new List<RayCastRepresentation>()
+        {
+            new RayCastRepresentation(0, 0),
+            new RayCastRepresentation(10, 0),
+            new RayCastRepresentation(-10, 0),
+            new RayCastRepresentation(45, 0),
+            new RayCastRepresentation(140, 0),
+            new RayCastRepresentation(160, 0),
+            new RayCastRepresentation(-45, 0),
+            new RayCastRepresentation(-140, 0),
+            new RayCastRepresentation(-160, 0),
+            new RayCastRepresentation(90, 0),
+            new RayCastRepresentation(-90, 0),
+            new RayCastRepresentation(110, 0),
+            new RayCastRepresentation(-110, 0),
+        };
+
         private float Cautiousness = 3f;
-        private float InverseTrackingAccuracy= 30f;
+        private float InverseTrackingAccuracy = 30f;
+        private float InverseAvoidancePriority = 20f;
+        private float InverseBrakePriority = 1f;
+        private float ThrottleMultiplier = 1.1f;
+        public bool RandomizeParameters = true;
+
         public bool debug = false;
 
         private Track track;
@@ -32,8 +54,11 @@ namespace Racing.AI
             
             tracker = GameObject.CreatePrimitive(PrimitiveType.Cube);
             DestroyImmediate(tracker.GetComponent<Collider>());
-            //DestroyImmediate(tracker.GetComponent<MeshRenderer>());
+            DestroyImmediate(tracker.GetComponent<MeshRenderer>());
             tracker.transform.position = track.waypoints[TargetIndex].transform.position;
+
+            if (RandomizeParameters)
+                ApplyRandomParameters();
         }
 
         private void Update()
@@ -42,6 +67,16 @@ namespace Racing.AI
             EvaluateMovement(CalulateCrossProduct());
             ReevaluteTargetIndex();
             Ghost();
+        }
+
+        /// <summary>
+        /// Applies a random modifier to AI parameters (makes it a bit more dynamic ya know?)
+        /// </summary>
+        private void ApplyRandomParameters()
+        {
+            Cautiousness *= UnityEngine.Random.Range(0.95f, 1.05f);
+            ThrottleMultiplier *= UnityEngine.Random.Range(0.95f, 1.05f);
+            InverseBrakePriority *= UnityEngine.Random.Range(0.95f, 1.05f);
         }
 
         //TODO: add transparency effect on ghost active
@@ -67,6 +102,8 @@ namespace Racing.AI
                 tracker.transform.LookAt(track.waypoints[TargetIndex].transform);
                 tracker.transform.Translate(0, 0, (20f) * Time.deltaTime);
             }
+
+            //Debug.DrawLine(transform.position, tracker.transform.position);
         }
 
         /// <summary>
@@ -86,26 +123,55 @@ namespace Racing.AI
         /// </summary>
         private void EvaluateMovement(float cross)
         {
-            //Collision avoidance
-            bool rightPossible = false;
-            bool leftPossible = false;
-            bool toTarget = false;
-            AvoidPossibleCollisions(ref rightPossible, ref leftPossible, ref toTarget);
+            float rightPressure = 0;
+            float leftPressure = 0;
+            float brakePriority = 0;
+            AvoidPossibleCollisions(ref leftPressure, ref rightPressure, ref brakePriority);
 
             //Vehicle parameters
             float steerAngle = 0;
             float motorTorque = 0;
             float brakeTorque = 0;
 
+
+            float trackGravity = 0;
+
+            if(cross < -4)
+            {
+                trackGravity = -1;
+            }
+            else if (cross > 4)
+            {
+                trackGravity = 1;
+            }
+
+
+            float steerMultiplier = rightPressure + leftPressure + trackGravity;
+
+            steerMultiplier = Mathf.Clamp(steerMultiplier, -1, 1);
+
+            if(cross > -4 && cross < 4)
+            {
+                steerMultiplier /= 4;
+            }
+
+
+
+
+            if (debug)
+                Debug.Log(steerMultiplier);
+
+            steerAngle = VehicleSettings.maxSteerAngle * steerMultiplier;
+/*
             //Determine steerAngle
             if (!leftPossible && rightPossible)
             {
-                steerAngle = VehicleSettings.maxSteerAngle / 15;
+                steerAngle = VehicleSettings.maxSteerAngle / InverseAvoidancePriority;
             }
 
             else if (!rightPossible && leftPossible)
             {
-                steerAngle = -VehicleSettings.maxSteerAngle / 15;
+                steerAngle = -VehicleSettings.maxSteerAngle / InverseAvoidancePriority;
             }
 
             if (cross < -4)
@@ -121,17 +187,12 @@ namespace Racing.AI
                 {
                     steerAngle = VehicleSettings.maxSteerAngle;
                 }
-            }
+            }*/
 
             //Determine throttle
-            if (toTarget)
-            {
-                motorTorque = VehicleSettings.maxMotorTorque * 1.2f;
-            }
-            else
-            {
-                brakeTorque = VehicleSettings.maxBrakeTorque / 2;
-            }
+            motorTorque = (1 - brakePriority) * VehicleSettings.maxMotorTorque * ThrottleMultiplier;
+            brakeTorque = brakePriority * (VehicleSettings.maxBrakeTorque / InverseBrakePriority);
+
 
             UpdateAxles(steerAngle, motorTorque, brakeTorque);
         }
@@ -145,59 +206,57 @@ namespace Racing.AI
         }
 
         /// <summary>
-        /// Produces a series of raycasts returning whether a specified direction should be taken
+        /// Produces a series of raycasts returning the "pressure" from other cars around the current vehicle
         /// </summary>
-        private void AvoidPossibleCollisions(ref bool rightPossible, ref bool leftPossible, ref bool toTarget)
+        private void AvoidPossibleCollisions(ref float leftPressure, ref float rightPressure, ref float brakePriority)
         {
             int vehicleLayerMask = LayerMask.GetMask(new string[] { "Vehicle" });
-            bool rightHit, leftHit, toTargetHit = false;
-
-            rightHit = Physics.Raycast(transform.position, GetRaycastAngle(90), Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(30), Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(135), Cautiousness + 2, vehicleLayerMask);
-
-            leftHit = Physics.Raycast(transform.position, GetRaycastAngle(-90), Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(-30), Cautiousness, vehicleLayerMask) ||
-                Physics.Raycast(transform.position, GetRaycastAngle(-135), Cautiousness + 2, vehicleLayerMask);
 
             RaycastHit hit;
-            if(Physics.Raycast(transform.position, GetRaycastAngle(0), out hit, Cautiousness + 5f, vehicleLayerMask))
+            foreach(RayCastRepresentation ray in RayCasts)
             {
-                if(transform.InverseTransformDirection(hit.transform.GetComponent<Vehicle.Common.Vehicle>().rigidbody.velocity).z - transform.InverseTransformDirection(vehicle.rigidbody.velocity).z < 0)
+                if(debug)
+                    Debug.DrawRay(transform.position + (transform.right * ray.OffsetX), GetRaycastAngle(ray.Angle) * (Cautiousness));
+                if (Physics.Raycast(transform.position + (transform.right * ray.OffsetX), GetRaycastAngle(ray.Angle), out hit, Cautiousness, vehicleLayerMask))
                 {
-                    toTargetHit = true;
-                }
-                else
-                {
-                    toTargetHit = false;
-                }
-            }
-            else if (Physics.Raycast(transform.position, GetRaycastAngle(15), out hit, Cautiousness + 2f, vehicleLayerMask))
-            {
-                if (transform.InverseTransformDirection(hit.transform.GetComponent<Vehicle.Common.Vehicle>().rigidbody.velocity).z - transform.InverseTransformDirection(vehicle.rigidbody.velocity).z < 0)
-                {
-                    toTargetHit = true;
-                }
-                else
-                {
-                    toTargetHit = false;
-                }
-            }
-            else if (Physics.Raycast(transform.position, GetRaycastAngle(-15), out hit, Cautiousness + 2f, vehicleLayerMask))
-            {
-                if (transform.InverseTransformDirection(hit.transform.GetComponent<Vehicle.Common.Vehicle>().rigidbody.velocity).z - transform.InverseTransformDirection(vehicle.rigidbody.velocity).z < 0)
-                {
-                    toTargetHit = true;
-                }
-                else
-                {
-                    toTargetHit = false;
+                    float distance = Vector3.Distance(transform.position, hit.transform.position);
+
+
+                    if(ray.Angle < 30 && ray.Angle > -30)
+                    {
+                        float deltaSpeed = transform.InverseTransformDirection(vehicle.rigidbody.velocity).z - transform.InverseTransformDirection(hit.transform.GetComponent<Rigidbody>().velocity).z;
+                        float newBrakePriority = deltaSpeed / distance;
+
+                        if(newBrakePriority > brakePriority)
+                        {
+                            brakePriority = newBrakePriority;
+                        }
+                    }
+                    else if (ray.Angle >= 10 && ray.Angle <= 110)
+                    {
+                        float newRightPressure = -(distance / Cautiousness);
+
+                        if(newRightPressure < rightPressure)
+                        {
+                            rightPressure = newRightPressure;
+                        }
+                    }
+                    else if (ray.Angle <= -10 && ray.Angle >= -110)
+                    {
+                        float newLeftPressure = distance / Cautiousness;
+                        
+                        if(newLeftPressure > leftPressure)
+                        {
+                            leftPressure = newLeftPressure;
+                        }
+                    }
                 }
             }
 
-            rightPossible = !rightHit;
-            leftPossible = !leftHit;
-            toTarget = !toTargetHit;
+            leftPressure /= 2;
+            rightPressure /= 2;
+            brakePriority /= 2;
+            brakePriority = Mathf.Clamp(brakePriority, 0, 1);
         }
 
         /// <summary>
@@ -235,6 +294,18 @@ namespace Racing.AI
             {
                 TargetIndex = (TargetIndex == track.waypoints.Count - 1) ? 0 : TargetIndex + 1;
             }
+        }
+    }
+
+    public struct RayCastRepresentation
+    {
+        public float Angle;
+        public float OffsetX;
+
+        public RayCastRepresentation(float angle, float offsetX)
+        {
+            this.Angle = angle;
+            this.OffsetX = offsetX;
         }
     }
 }

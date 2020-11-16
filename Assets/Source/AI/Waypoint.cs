@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace Racing.AI
 {
-    [System.Serializable]
     public class Waypoint : MonoBehaviour
     {
-        public Waypoint nextWaypoint;
-        public float radius;
+        // Intentionally empty - waypoint tag for AI cars to follow
     }
 }
