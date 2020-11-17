@@ -1217,7 +1217,7 @@ PrefabInstance:
     - target: {fileID: 4705342482234562092, guid: 4198913c5c6876b4fbbdc075aa4dfb71,
         type: 3}
       propertyPath: debug
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4705342482234562092, guid: 4198913c5c6876b4fbbdc075aa4dfb71,
         type: 3}
@@ -1857,6 +1857,11 @@ PrefabInstance:
         type: 3}
       propertyPath: ThrottleMultiplier
       value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705342482234562092, guid: 4198913c5c6876b4fbbdc075aa4dfb71,
+        type: 3}
+      propertyPath: debug
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5519732834723643442, guid: 4198913c5c6876b4fbbdc075aa4dfb71,
         type: 3}
