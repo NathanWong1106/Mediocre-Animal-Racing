@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Racing.User;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Racing.Map.Tracking
@@ -13,8 +12,7 @@ namespace Racing.Map.Tracking
     public class Checkpoint : MonoBehaviour
     {
         private Track track;
-        public Checkpoint nextCheckpoint;
-        public bool isFinish = false;
+        public bool IsFinish = false;
 
         private void Start()
         {
@@ -23,16 +21,15 @@ namespace Racing.Map.Tracking
 
         public void AddCheckpoint(Player player)
         {
-            if(track.checkpoints.Count == player.checkpoints.Count && isFinish)
+            if(track.Checkpoints.Count == player.Checkpoints.Count && IsFinish)
             {
-                player.checkpoints.Clear();
-                player.lapNumber++;
+                player.Checkpoints.Clear();
+                player.LapNumber++;
                 //track.finishers.Enqueue(player);
-                Debug.Log(player.lapNumber);
             }
 
-            player.checkpoints.Add(this);
-            player.target = nextCheckpoint;
+            player.Checkpoints.Add(this);
+            player.TargetCheckpointIndex = (player.TargetCheckpointIndex == track.Checkpoints.Count - 1) ? 0 : player.TargetCheckpointIndex + 1;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -41,7 +38,7 @@ namespace Racing.Map.Tracking
 
             if (player)
             {
-                if (player.target == this)
+                if (track.Checkpoints[player.TargetCheckpointIndex]  == this)
                 {
                     AddCheckpoint(player);
                 }

@@ -606,11 +606,10 @@ GameObject:
   - component: {fileID: 5519732835029815990}
   - component: {fileID: 5519732835029815985}
   - component: {fileID: 5519732835029815994}
-  - component: {fileID: 5519732835029815989}
   - component: {fileID: 5519732835029815995}
   - component: {fileID: 4705342483082678083}
-  - component: {fileID: 4705342482802190765}
   - component: {fileID: 4705342482234562092}
+  - component: {fileID: 836963651721496037}
   m_Layer: 8
   m_Name: Vehicle Body
   m_TagString: Untagged
@@ -709,20 +708,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &5519732835029815989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519732835029815984}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28721d0822516a549bff77979bac38e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isGrounded: 1
-  inputType: 1
 --- !u!114 &5519732835029815995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -735,18 +720,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 271660d1ec1de4d4f988934f90f29313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rigidbody: {fileID: 5519732835029815994}
-  axles:
-  - left: {fileID: 5519732835088331405}
-    right: {fileID: 5519732834590287430}
-    motor: 1
-    steering: 1
-    braking: 1
-  - left: {fileID: 5519732834799153897}
-    right: {fileID: 5519732834235057938}
-    motor: 1
-    steering: 0
-    braking: 1
+  Rigidbody: {fileID: 0}
+  Axles:
+  - Left: {fileID: 5519732835088331405}
+    Right: {fileID: 5519732834590287430}
+    Motor: 0
+    Steering: 1
+    Braking: 1
+    TargetLerpAngle: 0
+    PreviousTargetLerpAngle: 0
+    InitialLerpAngle: 0
+    IsLerping: 0
+    TimeSinceStartLerp: 0
+  - Left: {fileID: 5519732834235057938}
+    Right: {fileID: 5519732834799153897}
+    Motor: 1
+    Steering: 0
+    Braking: 0
+    TargetLerpAngle: 0
+    PreviousTargetLerpAngle: 0
+    InitialLerpAngle: 0
+    IsLerping: 0
+    TimeSinceStartLerp: 0
 --- !u!114 &4705342483082678083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,18 +752,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99a7fb4ed0b6ebf45a07077903e21567, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4705342482802190765
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519732835029815984}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4025164e8219df449ac0c7b72b203595, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &4705342482234562092
@@ -783,7 +766,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04cfefd96b01f4b4d89c8877210cedcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RandomizeParameters: 1
   debug: 0
+--- !u!114 &836963651721496037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5519732835029815984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a4b543f4807a749884166cd9894f97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5519732835088331407
 GameObject:
   m_ObjectHideFlags: 0

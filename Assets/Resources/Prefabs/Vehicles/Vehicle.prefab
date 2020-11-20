@@ -692,7 +692,7 @@ GameObject:
   - component: {fileID: 997190844933845104}
   - component: {fileID: 997190844933845118}
   - component: {fileID: 1882992006}
-  - component: {fileID: 1668549480}
+  - component: {fileID: 4975034224795704284}
   m_Layer: 8
   m_Name: Vehicle Body
   m_TagString: Untagged
@@ -804,8 +804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28721d0822516a549bff77979bac38e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGrounded: 1
-  inputType: 0
+  IsGrounded: 1
 --- !u!114 &997190844933845118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -818,18 +817,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 271660d1ec1de4d4f988934f90f29313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rigidbody: {fileID: 997190844933845119}
-  axles:
-  - left: {fileID: 997190844990705736}
-    right: {fileID: 997190844544894083}
-    motor: 1
-    steering: 1
-    braking: 1
-  - left: {fileID: 997190844770275372}
-    right: {fileID: 997190844122047959}
-    motor: 1
-    steering: 0
-    braking: 1
+  Rigidbody: {fileID: 0}
+  Axles:
+  - Left: {fileID: 997190844990705736}
+    Right: {fileID: 997190844544894083}
+    Motor: 0
+    Steering: 1
+    Braking: 1
+    TargetLerpAngle: 0
+    PreviousTargetLerpAngle: 0
+    InitialLerpAngle: 0
+    IsLerping: 0
+    TimeSinceStartLerp: 0
+  - Left: {fileID: 997190844122047959}
+    Right: {fileID: 997190844770275372}
+    Motor: 1
+    Steering: 0
+    Braking: 0
+    TargetLerpAngle: 0
+    PreviousTargetLerpAngle: 0
+    InitialLerpAngle: 0
+    IsLerping: 0
+    TimeSinceStartLerp: 0
 --- !u!114 &1882992006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -842,7 +851,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99a7fb4ed0b6ebf45a07077903e21567, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1668549480
+--- !u!114 &4975034224795704284
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -851,7 +860,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 997190844933845109}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4025164e8219df449ac0c7b72b203595, type: 3}
+  m_Script: {fileID: 11500000, guid: b9a4b543f4807a749884166cd9894f97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &997190844990705738

@@ -1,18 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Racing.Vehicle.Common;
 using UnityEngine;
 
-namespace Racing.Vehicle.Common
+namespace Racing.Vehicles.Common
 {
     public class Vehicle : MonoBehaviour
     {
-        public new Rigidbody rigidbody;
-        public List<Axle> axles;
+        [HideInInspector] public Rigidbody Rigidbody;
+        public List<Axle> Axles;
 
-        private void Awake()
+        private void Start()
         {
-            rigidbody = GetComponent<Rigidbody>();
+            Rigidbody = GetComponent<Rigidbody>();
         }
     }
 

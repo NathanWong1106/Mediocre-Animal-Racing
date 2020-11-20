@@ -2,26 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Racing.Vehicle.Common;
+using Racing.Vehicles.Common;
 using Racing.Map;
 using Racing.Util;
 
 namespace Racing.AI
 {
-    [RequireComponent(typeof(Vehicle.Common.Vehicle))]
+    [RequireComponent(typeof(Vehicle), typeof(VehicleUpdater))]
     public class AIMovement : MonoBehaviour
     {
-
         private float Cautiousness = 4f;
+        private float InverseAvoidancePriority = 1.3f;
         private float InverseTrackingAccuracy = 20f;
-        private float InverseBrakePriority = 1f;
+        private float InverseBrakePriority = 3f;
         private float ThrottleMultiplier = 1.1f;
         public bool RandomizeParameters = true;
 
         public bool debug = false;
 
         private Track track;
-        private Vehicle.Common.Vehicle vehicle;
+        private Vehicles.Common.Vehicle vehicle;
+        private VehicleUpdater vehicleUpdater;
         private GameObject tracker;
 
         [System.NonSerialized]
@@ -29,14 +30,14 @@ namespace Racing.AI
 
         private void Start()
         {
-            GetComponent<VehicleController>().inputType = InputType.AI;
-            vehicle = GetComponent<Vehicle.Common.Vehicle>();
+            vehicle = GetComponent<Vehicle>();
+            vehicleUpdater = GetComponent<VehicleUpdater>();
             track = FindObjectOfType<Track>();
 
             tracker = GameObject.CreatePrimitive(PrimitiveType.Cube);
             DestroyImmediate(tracker.GetComponent<Collider>());
             DestroyImmediate(tracker.GetComponent<MeshRenderer>());
-            tracker.transform.position = track.waypoints[TargetIndex].transform.position;
+            tracker.transform.position = track.Waypoints[TargetIndex].transform.position;
 
             if (RandomizeParameters)
                 ApplyRandomParameters();
@@ -63,7 +64,7 @@ namespace Racing.AI
         //TODO: add transparency effect on ghost active
         private void Ghost()
         {
-            if (Mathf.Abs(transform.InverseTransformDirection(vehicle.rigidbody.velocity).z) < 10f)
+            if (Mathf.Abs(transform.InverseTransformDirection(vehicle.Rigidbody.velocity).z) < 10f)
             {
                 vehicle.GetComponent<BoxCollider>().enabled = false;
             }
@@ -80,7 +81,7 @@ namespace Racing.AI
         {
             if (Vector3.Distance(tracker.transform.position, transform.position) < InverseTrackingAccuracy)
             {
-                tracker.transform.LookAt(track.waypoints[TargetIndex].transform);
+                tracker.transform.LookAt(track.Waypoints[TargetIndex].transform);
                 tracker.transform.Translate(0, 0, (20f) * Time.deltaTime);
             }
 
@@ -136,14 +137,24 @@ namespace Racing.AI
                 steerMultiplier /= 2;
             }
 
-            steerAngle = VehicleSettings.maxSteerAngle * steerMultiplier;
+            steerAngle = VehicleSettings.MaxSteerAngle * steerMultiplier;
 
             //Determine throttle
-            motorTorque = (1 - brakePriority) * VehicleSettings.maxMotorTorque * ThrottleMultiplier;
-            brakeTorque = brakePriority * (VehicleSettings.maxBrakeTorque / InverseBrakePriority);
+            if(brakePriority >= 0.5f)
+            {
+                motorTorque = 0;
+            }
+            else
+            {
+                motorTorque = (1 - brakePriority) * VehicleSettings.MaxMotorTorque * ThrottleMultiplier;
+            }
+            brakeTorque = brakePriority * (VehicleSettings.MaxBrakeTorque / InverseBrakePriority);
 
 
-            UpdateAxles(steerAngle, motorTorque, brakeTorque);
+            //UpdateAxles(steerAngle, motorTorque, brakeTorque);
+            vehicleUpdater.TargetLerpAngle = steerAngle;
+            vehicleUpdater.MotorTorque = motorTorque;
+            vehicleUpdater.BrakeTorque = brakeTorque;
         }
 
         /// <summary>
@@ -177,7 +188,7 @@ namespace Racing.AI
 
                     if (i < 45 && i > -45)
                     {
-                        float deltaSpeed = transform.InverseTransformDirection(vehicle.rigidbody.velocity).z - transform.InverseTransformDirection(hit.transform.GetComponent<Rigidbody>().velocity).z;
+                        float deltaSpeed = transform.InverseTransformDirection(vehicle.Rigidbody.velocity).z - transform.InverseTransformDirection(hit.transform.GetComponent<Rigidbody>().velocity).z;
 
                         if (deltaSpeed > 1.5)
                         {
@@ -189,6 +200,8 @@ namespace Racing.AI
                             }
                         }
                     }
+
+                    // Simple linear equation representing the inverse percentage of distance in Cautiousness
                     else if (i >= 10 && i <= 170)
                     {
                         float newRightPressure = -((Cautiousness - distance) / Cautiousness);
@@ -210,34 +223,10 @@ namespace Racing.AI
                 }
             }
 
-            brakePriority /= 2;
+            leftPressure /= InverseAvoidancePriority;
+            rightPressure /= InverseAvoidancePriority;
+            brakePriority /= InverseBrakePriority;
             brakePriority = Mathf.Clamp(brakePriority, 0, 1);
-        }
-
-        /// <summary>
-        /// Updates axle parameters with the given paramaters
-        /// </summary>
-        private void UpdateAxles(float steerAngle, float motorTorque, float brakeTorque)
-        {
-            foreach (var axle in vehicle.axles)
-            {
-                if (axle.steering)
-                {
-                    axle.targetLerpAngle = steerAngle;
-                }
-
-                if (axle.motor)
-                {
-                    axle.right.motorTorque = motorTorque;
-                    axle.left.motorTorque = motorTorque;
-                }
-
-                if (axle.braking)
-                {
-                    axle.right.brakeTorque = brakeTorque;
-                    axle.left.brakeTorque = brakeTorque;
-                }
-            }
         }
 
         /// <summary>
@@ -245,9 +234,9 @@ namespace Racing.AI
         /// </summary>
         private void ReevaluteTargetIndex()
         {
-            if (Vector3.Distance(track.waypoints[TargetIndex].transform.position, tracker.transform.position) < 1)
+            if (Vector3.Distance(track.Waypoints[TargetIndex].transform.position, tracker.transform.position) < 1)
             {
-                TargetIndex = (TargetIndex == track.waypoints.Count - 1) ? 0 : TargetIndex + 1;
+                TargetIndex = (TargetIndex == track.Waypoints.Count - 1) ? 0 : TargetIndex + 1;
             }
         }
     }

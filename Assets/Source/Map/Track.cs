@@ -10,35 +10,43 @@ using System;
 namespace Racing.Map
 {
     /// <summary>
-    /// Stores track checkpoints and race data
+    /// Stores track variables
     /// </summary>
     public class Track : MonoBehaviour
     {
-        public List<Checkpoint> checkpoints { get; set; } = new List<Checkpoint>();
-        public List<Waypoint> waypoints = new List<Waypoint>();
-        public Queue<Player> finishers { get; set; } = new Queue<Player>();
-        public Checkpoint finishLine { get; set; }
-        public int laps { get; set; } = 5;
+        /// <summary>
+        /// Ordered checkpoints on the track
+        /// <para>In the Unity Editor make sure to organize the checkpoints in descending order (top to bottom, first to last)</para>
+        /// </summary>
+        public List<Checkpoint> Checkpoints { get; set; }
+
+        /// <summary>
+        /// Ordered waypoints for AI on the track
+        /// <para>In the Unity Editor make sure to organize the checkpoints in descending order (top to bottom, first to last)</para>
+        /// </summary>
+        public List<Waypoint> Waypoints { get; set; }
+        public Checkpoint FinishLine { get; set; }
 
         void Start()
         {
-            checkpoints = transform.GetComponentsInChildren<Checkpoint>().ToList();
-            finishLine = checkpoints.Find(c => c.isFinish);
-
-            if (checkpoints.Count() == 0 || finishLine == null)
+            Checkpoints = transform.Find("Checkpoints").GetComponentsInChildren<Checkpoint>().ToList();
+            Waypoints = transform.Find("Waypoints").GetComponentsInChildren<Waypoint>().ToList();
+            //FinishLine = Checkpoints.Find(c => c.IsFinish);
+/*
+            if (Checkpoints.Count() == 0 || FinishLine == null)
             {
                 throw new System.Exception("~Track: No checkpoints or finish line found");
-            }
+            }*/
 
             InitPlayers();
         }
 
         private void InitPlayers()
         {
-            foreach (var player in FindObjectsOfType<Player>())
+/*            foreach (var player in FindObjectsOfType<Player>())
             {
-                player.target = finishLine;
-            }
+                player.target = FinishLine;
+            }*/
         }
     }
 }

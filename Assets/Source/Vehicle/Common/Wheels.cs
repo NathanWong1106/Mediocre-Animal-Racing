@@ -1,10 +1,14 @@
-﻿using Racing.Vehicle.Common;
+﻿/*using Racing.Vehicle.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+
+/// <summary>
+/// Deprecated. Check Racing.Vehicle.Common.VehicleUpdater.cs
+/// </summary>
 [RequireComponent(typeof(Vehicle))]
 public class Wheels : MonoBehaviour
 {
@@ -70,4 +74,4 @@ public class Wheels : MonoBehaviour
             axle.isLerping = true;
         }
     }
-}
+}*/
