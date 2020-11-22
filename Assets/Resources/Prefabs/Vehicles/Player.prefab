@@ -416,7 +416,7 @@ GameObject:
   m_Component:
   - component: {fileID: 997190844678005494}
   m_Layer: 0
-  m_Name: Vehicle
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -851,6 +851,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99a7fb4ed0b6ebf45a07077903e21567, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InputType: 0
 --- !u!114 &4975034224795704284
 MonoBehaviour:
   m_ObjectHideFlags: 0
