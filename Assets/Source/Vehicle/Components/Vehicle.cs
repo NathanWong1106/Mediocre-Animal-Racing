@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Racing.Vehicles.Common
+namespace Racing.Vehicles.Components
 {
     public class Vehicle : MonoBehaviour
     {

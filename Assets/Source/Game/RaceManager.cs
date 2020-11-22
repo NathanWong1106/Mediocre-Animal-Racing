@@ -6,11 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Note to self: Use a multi-tiered race position system: lap --> checkpoint --> distance to next checkpoint... merci beaucoup :)
-
 namespace Racing.Game
 {
-    [RequireComponent(typeof(Track))]
+    [RequireComponent(typeof(TrackInstance))]
     public class RaceManager : MonoBehaviour
     {
         public List<Player> Players { get; set; }
@@ -20,6 +18,11 @@ namespace Racing.Game
         private void Start()
         {
             Players = FindObjectsOfType<Player>().ToList();
+        }
+
+        private void FixedUpdate()
+        {
+            PositionTracker.DetermineUpdatePositions(Players);
         }
     }
 }

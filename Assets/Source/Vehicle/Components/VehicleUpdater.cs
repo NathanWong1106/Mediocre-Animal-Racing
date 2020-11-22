@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Racing.Vehicles.Common
+namespace Racing.Vehicles.Components
 {
     /// <summary>
     /// Updates vehicle axles with the provided fields
@@ -11,8 +11,7 @@ namespace Racing.Vehicles.Common
     [RequireComponent(typeof(Vehicle))]
     public class VehicleUpdater : MonoBehaviour
     {
-        Vehicle vehicle;
-
+        private Vehicle vehicle;
         public float TargetLerpAngle { get; set; } = 0;
         public float BrakeTorque { get; set; } = 0;
         public float MotorTorque { get; set; } = 0;

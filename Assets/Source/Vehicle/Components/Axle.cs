@@ -7,7 +7,7 @@ using UnityEngine;
 /// <see cref="https://docs.unity3d.com/Manual/WheelColliderTutorial.html"/>
 /// </summary>
 
-namespace Racing.Vehicles.Common
+namespace Racing.Vehicles.Components
 {
     /// <summary>
     /// Contains relevant fields of a vehicle axle

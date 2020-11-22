@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Racing.Vehicles.Common;
+using Racing.Vehicles.Components;
 using Racing.Map;
 using Racing.Util;
 
@@ -20,8 +20,7 @@ namespace Racing.AI
 
         public bool debug = false;
 
-        private Track track;
-        private Vehicles.Common.Vehicle vehicle;
+        private Vehicle vehicle;
         private VehicleUpdater vehicleUpdater;
         private GameObject tracker;
 
@@ -32,12 +31,12 @@ namespace Racing.AI
         {
             vehicle = GetComponent<Vehicle>();
             vehicleUpdater = GetComponent<VehicleUpdater>();
-            track = FindObjectOfType<Track>();
 
             tracker = GameObject.CreatePrimitive(PrimitiveType.Cube);
             DestroyImmediate(tracker.GetComponent<Collider>());
             DestroyImmediate(tracker.GetComponent<MeshRenderer>());
-            tracker.transform.position = track.Waypoints[TargetIndex].transform.position;
+
+            tracker.transform.position = Track.Current.Waypoints[TargetIndex].transform.position;
 
             if (RandomizeParameters)
                 ApplyRandomParameters();
@@ -64,6 +63,7 @@ namespace Racing.AI
         //TODO: add transparency effect on ghost active
         private void Ghost()
         {
+            //TODO: some arbitrary value - change when finalized
             if (Mathf.Abs(transform.InverseTransformDirection(vehicle.Rigidbody.velocity).z) < 10f)
             {
                 vehicle.GetComponent<BoxCollider>().enabled = false;
@@ -81,7 +81,7 @@ namespace Racing.AI
         {
             if (Vector3.Distance(tracker.transform.position, transform.position) < InverseTrackingAccuracy)
             {
-                tracker.transform.LookAt(track.Waypoints[TargetIndex].transform);
+                tracker.transform.LookAt(Track.Current.Waypoints[TargetIndex].transform);
                 tracker.transform.Translate(0, 0, (20f) * Time.deltaTime);
             }
 
@@ -171,14 +171,13 @@ namespace Racing.AI
         private void AvoidPossibleCollisions(ref float leftPressure, ref float rightPressure, ref float brakePriority)
         {
             int vehicleLayerMask = LayerMask.GetMask(new string[] { "Vehicle" });
-
             RaycastHit hit;
+
             for (float i = -170; i <= 170; i += 15)
             {
                 float raycastDistanceAdd = 0;
                 if (i < 45 && i > -45)
                     raycastDistanceAdd = 2;
-
 
                 if (debug)
                     Debug.DrawRay(transform.position, GetRaycastAngle(i) * (Cautiousness + raycastDistanceAdd));
@@ -190,14 +189,10 @@ namespace Racing.AI
                     {
                         float deltaSpeed = transform.InverseTransformDirection(vehicle.Rigidbody.velocity).z - transform.InverseTransformDirection(hit.transform.GetComponent<Rigidbody>().velocity).z;
 
-                        if (deltaSpeed > 1.5)
+                        if (deltaSpeed > 1.5) //TODO: some arbitrary number - use a variable
                         {
                             float newBrakePriority = deltaSpeed / distance;
-
-                            if (newBrakePriority > brakePriority)
-                            {
-                                brakePriority = newBrakePriority;
-                            }
+                            brakePriority = newBrakePriority > brakePriority ? newBrakePriority : brakePriority;
                         }
                     }
 
@@ -205,20 +200,12 @@ namespace Racing.AI
                     else if (i >= 10 && i <= 170)
                     {
                         float newRightPressure = -((Cautiousness - distance) / Cautiousness);
-
-                        if (newRightPressure < rightPressure)
-                        {
-                            rightPressure = newRightPressure;
-                        }
+                        rightPressure = newRightPressure < rightPressure ? newRightPressure : rightPressure;
                     }
                     else if (i <= -10 && i >= -170)
                     {
                         float newLeftPressure = (Cautiousness - distance) / Cautiousness;
-
-                        if (newLeftPressure > leftPressure)
-                        {
-                            leftPressure = newLeftPressure;
-                        }
+                        leftPressure = newLeftPressure > leftPressure ? newLeftPressure : leftPressure;
                     }
                 }
             }
@@ -234,9 +221,9 @@ namespace Racing.AI
         /// </summary>
         private void ReevaluteTargetIndex()
         {
-            if (Vector3.Distance(track.Waypoints[TargetIndex].transform.position, tracker.transform.position) < 1)
+            if (Vector3.Distance(Track.Current.Waypoints[TargetIndex].transform.position, tracker.transform.position) < 1)
             {
-                TargetIndex = (TargetIndex == track.Waypoints.Count - 1) ? 0 : TargetIndex + 1;
+                TargetIndex = (TargetIndex == Track.Current.Waypoints.Count - 1) ? 0 : TargetIndex + 1;
             }
         }
     }

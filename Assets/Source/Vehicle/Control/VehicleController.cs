@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Racing.Vehicles.Common;
+using Racing.Vehicles.Components;
 using Racing.Util;
 using UnityEngine;
 

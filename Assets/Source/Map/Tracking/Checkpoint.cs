@@ -11,17 +11,11 @@ namespace Racing.Map.Tracking
     /// </summary>
     public class Checkpoint : MonoBehaviour
     {
-        private Track track;
         public bool IsFinish = false;
-
-        private void Start()
-        {
-            track = FindObjectOfType<Track>();
-        }
 
         public void AddCheckpoint(Player player)
         {
-            if(track.Checkpoints.Count == player.Checkpoints.Count && IsFinish)
+            if(Track.Current.Checkpoints.Count == player.Checkpoints.Count && IsFinish)
             {
                 player.Checkpoints.Clear();
                 player.LapNumber++;
@@ -29,7 +23,8 @@ namespace Racing.Map.Tracking
             }
 
             player.Checkpoints.Add(this);
-            player.TargetCheckpointIndex = (player.TargetCheckpointIndex == track.Checkpoints.Count - 1) ? 0 : player.TargetCheckpointIndex + 1;
+            player.PreviousCheckpointIndex = player.TargetCheckpointIndex;
+            player.TargetCheckpointIndex = (player.TargetCheckpointIndex == Track.Current.Checkpoints.Count - 1) ? 0 : player.TargetCheckpointIndex + 1;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -38,7 +33,7 @@ namespace Racing.Map.Tracking
 
             if (player)
             {
-                if (track.Checkpoints[player.TargetCheckpointIndex]  == this)
+                if (Track.Current.Checkpoints[player.TargetCheckpointIndex]  == this)
                 {
                     AddCheckpoint(player);
                 }
