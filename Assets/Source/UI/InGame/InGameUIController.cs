@@ -10,12 +10,10 @@ namespace Racing.UI.InGame
     public class InGameUIController : MonoBehaviour, IUserInterfaceController
     {
         private InGameUIView view;
-        private RaceManager raceManager;
 
         private void Start()
         {
             view = GetComponent<InGameUIView>();
-            raceManager = Track.Current.GetComponent<RaceManager>();
             UserInterface.CurrentController = this;
 
             SetLapIndicator(1);
@@ -31,14 +29,19 @@ namespace Racing.UI.InGame
             view.LapIndicator.SetText(GetLapString(laps));
         }
 
+        public void SetCountdownTimer(int seconds)
+        {
+            view.CountdownTimer.SetText(seconds.ToString());
+        }
+
         private string GetPositionString(int position)
         {
-            return $"Position {position}/{raceManager.Players.Count}";
+            return $"Position {position}/{RaceScene.CurrentGameManager.Players.Count}";
         }
 
         private string GetLapString(int laps)
         {
-            return $"Lap {laps}/{raceManager.Laps}";
+            return $"Lap {laps}/{RaceScene.CurrentGameManager.Laps}";
         }
     }
 }

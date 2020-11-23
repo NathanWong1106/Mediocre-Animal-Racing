@@ -26,7 +26,7 @@ namespace Racing.Map
         {
             Checkpoints = transform.Find("Checkpoints").GetComponentsInChildren<Checkpoint>().ToList();
             Waypoints = transform.Find("Waypoints").GetComponentsInChildren<Waypoint>().ToList();
-            Track.Current = this;
+            RaceScene.CurrentTrack = this;
         }
     }
 }

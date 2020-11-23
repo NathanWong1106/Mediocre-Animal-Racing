@@ -12,6 +12,7 @@ namespace Racing.UI.InGame
         //Set in Unity Editor
         public TextMeshProUGUI PositionIndicator;
         public TextMeshProUGUI LapIndicator;
+        public TextMeshProUGUI CountdownTimer;
 
         private void Start()
         {

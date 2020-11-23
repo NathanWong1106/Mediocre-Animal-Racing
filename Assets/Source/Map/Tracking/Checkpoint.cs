@@ -15,7 +15,7 @@ namespace Racing.Map.Tracking
 
         public void AddCheckpoint(Player player)
         {
-            if(Track.Current.Checkpoints.Count == player.Checkpoints.Count && IsFinish)
+            if(RaceScene.CurrentTrack.Checkpoints.Count == player.Checkpoints.Count && IsFinish)
             {
                 player.Checkpoints.Clear();
                 player.LapNumber++;
@@ -24,7 +24,7 @@ namespace Racing.Map.Tracking
 
             player.Checkpoints.Add(this);
             player.PreviousCheckpointIndex = player.TargetCheckpointIndex;
-            player.TargetCheckpointIndex = (player.TargetCheckpointIndex == Track.Current.Checkpoints.Count - 1) ? 0 : player.TargetCheckpointIndex + 1;
+            player.TargetCheckpointIndex = (player.TargetCheckpointIndex == RaceScene.CurrentTrack.Checkpoints.Count - 1) ? 0 : player.TargetCheckpointIndex + 1;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -33,7 +33,7 @@ namespace Racing.Map.Tracking
 
             if (player)
             {
-                if (Track.Current.Checkpoints[player.TargetCheckpointIndex]  == this)
+                if (RaceScene.CurrentTrack.Checkpoints[player.TargetCheckpointIndex]  == this)
                 {
                     AddCheckpoint(player);
                 }

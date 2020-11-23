@@ -36,7 +36,7 @@ namespace Racing.AI
             DestroyImmediate(tracker.GetComponent<Collider>());
             DestroyImmediate(tracker.GetComponent<MeshRenderer>());
 
-            tracker.transform.position = Track.Current.Waypoints[TargetIndex].transform.position;
+            tracker.transform.position = RaceScene.CurrentTrack.Waypoints[TargetIndex].transform.position;
 
             if (RandomizeParameters)
                 ApplyRandomParameters();
@@ -81,7 +81,7 @@ namespace Racing.AI
         {
             if (Vector3.Distance(tracker.transform.position, transform.position) < InverseTrackingAccuracy)
             {
-                tracker.transform.LookAt(Track.Current.Waypoints[TargetIndex].transform);
+                tracker.transform.LookAt(RaceScene.CurrentTrack.Waypoints[TargetIndex].transform);
                 tracker.transform.Translate(0, 0, (20f) * Time.deltaTime);
             }
 
@@ -221,9 +221,9 @@ namespace Racing.AI
         /// </summary>
         private void ReevaluteTargetIndex()
         {
-            if (Vector3.Distance(Track.Current.Waypoints[TargetIndex].transform.position, tracker.transform.position) < 1)
+            if (Vector3.Distance(RaceScene.CurrentTrack.Waypoints[TargetIndex].transform.position, tracker.transform.position) < 1)
             {
-                TargetIndex = (TargetIndex == Track.Current.Waypoints.Count - 1) ? 0 : TargetIndex + 1;
+                TargetIndex = (TargetIndex == RaceScene.CurrentTrack.Waypoints.Count - 1) ? 0 : TargetIndex + 1;
             }
         }
     }

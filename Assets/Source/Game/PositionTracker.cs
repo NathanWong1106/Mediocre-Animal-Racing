@@ -18,7 +18,7 @@ namespace Racing.Game
             // Descending: Greatest --> Smallest
             players = players.OrderByDescending(p => p.LapNumber)
                 .ThenByDescending(p => p.TargetIndexForPosition())
-                .ThenBy(p => Vector3.Distance(p.transform.position, Track.Current.Checkpoints[p.TargetCheckpointIndex].transform.position))
+                .ThenBy(p => Vector3.Distance(p.transform.position, RaceScene.CurrentTrack.Checkpoints[p.TargetCheckpointIndex].transform.position))
                 .ToList();
 
             for (int i = 1; i <= players.Count; i++)
