@@ -19,7 +19,9 @@ namespace Racing.Map.Tracking
             {
                 player.Checkpoints.Clear();
                 player.LapNumber++;
-                //track.finishers.Enqueue(player);
+
+                if(player.LapNumber > RaceScene.CurrentGameManager.Laps)
+                    RaceScene.CurrentGameManager.OnPlayerFinish(player);
             }
 
             player.Checkpoints.Add(this);
@@ -33,7 +35,7 @@ namespace Racing.Map.Tracking
 
             if (player)
             {
-                if (RaceScene.CurrentTrack.Checkpoints[player.TargetCheckpointIndex]  == this)
+                if (RaceScene.CurrentTrack.Checkpoints[player.TargetCheckpointIndex] == this && !player.Finished)
                 {
                     AddCheckpoint(player);
                 }

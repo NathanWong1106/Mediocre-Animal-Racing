@@ -10,9 +10,15 @@ namespace Racing.UI.InGame
     public class InGameUIView : MonoBehaviour, IUserInterfaceView
     {
         //Set in Unity Editor
-        public TextMeshProUGUI PositionIndicator;
-        public TextMeshProUGUI LapIndicator;
-        public TextMeshProUGUI CountdownTimer;
+        public GameObject HUD;
+        public GameObject Menu;
+        public TextMeshProUGUI HUDPositionIndicator;
+        public TextMeshProUGUI HUDLapIndicator;
+        public TextMeshProUGUI HUDMessageDisplay;
+        public Button MenuRestart;
+        public Button MenuMainMenu;
+        public Button MenuExitGame;
+        public Button MenuContinue;
 
         private void Start()
         {

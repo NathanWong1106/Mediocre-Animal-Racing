@@ -10,17 +10,17 @@ namespace Racing.Util
     /// </summary>
     public class CustomUnityTimer : MonoBehaviour
     {
-        public event Action<int> OnTimeStepInterval;
+        public event Action<float> OnTimeStepInterval;
         public event Action OnTimerFinish;
-        public int Milliseconds;
-        public int TimeStep;
+        public float Milliseconds;
+        public float TimeStep;
 
         /// <summary>
         /// Initializes the timer with the given parameters
         /// </summary>
         /// <param name="milliseconds">Amount of time the timer will be run in milliseconds</param>
         /// <param name="timeStep">Interval in milliseconds where the OnTimeStepInterval Action will be called</param>
-        public void Initialize(int milliseconds, int timeStep, Action<int> onTimeStepInterval = null, Action onTimerFinish = null)
+        public void Initialize(float milliseconds, float timeStep, Action<float> onTimeStepInterval = null, Action onTimerFinish = null)
         {
             this.Milliseconds = milliseconds;
             this.TimeStep = timeStep;
@@ -35,11 +35,13 @@ namespace Racing.Util
 
         private IEnumerator Timer()
         {
-            yield return new WaitForSeconds(TimeStep / 1000);
+            yield return new WaitForSeconds(Converter.MillisecondsToSeconds(TimeStep));
             this.Milliseconds -= TimeStep;
 
-            if (OnTimeStepInterval != null) OnTimeStepInterval.Invoke(Milliseconds);
-
+            if (OnTimeStepInterval != null)
+            {
+                OnTimeStepInterval.Invoke(Milliseconds);
+            }
             if (Milliseconds <= 0)
             {
                 if(OnTimerFinish != null) OnTimerFinish.Invoke();

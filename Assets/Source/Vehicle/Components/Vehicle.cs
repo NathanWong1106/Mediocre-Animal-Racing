@@ -14,5 +14,4 @@ namespace Racing.Vehicles.Components
             Rigidbody = GetComponent<Rigidbody>();
         }
     }
-
 }

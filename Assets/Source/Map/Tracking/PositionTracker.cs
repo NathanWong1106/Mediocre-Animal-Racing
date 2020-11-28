@@ -4,7 +4,7 @@ using Racing.User;
 using Racing.Map;
 using UnityEngine;
 
-namespace Racing.Game
+namespace Racing.Map.Tracking
 {
     public static class PositionTracker
     {

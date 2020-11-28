@@ -47,7 +47,7 @@ namespace Racing.Vehicles.Control
         /// </summary>
         private void Jump()
         {
-            if (InputHelper.Jump && IsGrounded)
+            if (InputManager.Jump && IsGrounded)
             {
                 vehicle.Rigidbody.AddForce(Vector3.up * VehicleSettings.JumpForce, ForceMode.Impulse);
             }
@@ -74,15 +74,15 @@ namespace Racing.Vehicles.Control
         {
             Vector3 localVelocity = transform.InverseTransformDirection(vehicle.Rigidbody.velocity);
 
-            vehicleUpdater.TargetLerpAngle = VehicleSettings.MaxSteerAngle * InputHelper.Horizontal;
-            vehicleUpdater.MotorTorque = VehicleSettings.MaxMotorTorque * InputHelper.Vertical;
+            vehicleUpdater.TargetLerpAngle = VehicleSettings.MaxSteerAngle * InputManager.Horizontal;
+            vehicleUpdater.MotorTorque = VehicleSettings.MaxMotorTorque * InputManager.Vertical;
 
             // 0.01f accounts for small amount of velocity still carried by the rigidbody (at this point motorTorque is able to simulate braking)
-            if (localVelocity.z > 0.01f && InputHelper.Vertical < 0)
+            if (localVelocity.z > 0.01f && InputManager.Vertical < 0)
             {
                 vehicleUpdater.BrakeTorque = VehicleSettings.MaxBrakeTorque;
             }
-            else if (localVelocity.z < -0.01f && InputHelper.Vertical > 0)
+            else if (localVelocity.z < -0.01f && InputManager.Vertical > 0)
             {
                 vehicleUpdater.BrakeTorque = VehicleSettings.MaxBrakeTorque;
             }
@@ -97,7 +97,7 @@ namespace Racing.Vehicles.Control
         /// </summary>
         private void ApplyAirMovement()
         {
-            vehicle.Rigidbody.AddTorque(Vector3.up * VehicleSettings.AirTurnTorque * InputHelper.Horizontal);
+            vehicle.Rigidbody.AddTorque(Vector3.up * VehicleSettings.AirTurnTorque * InputManager.Horizontal);
         }
     }
 }

@@ -13,7 +13,12 @@ namespace Racing.Util
     {
         public static float MillisecondsToSeconds(float milliseconds)
         {
-            return milliseconds / 1000;
+            return milliseconds / 1000f;
+        }
+
+        public static float SecondsToMilliseconds(float seconds)
+        {
+            return seconds * 1000f;
         }
     }
 }

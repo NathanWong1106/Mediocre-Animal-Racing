@@ -1,4 +1,4 @@
-﻿using Racing.Game;
+﻿using Racing.Game.Race;
 
 namespace Racing.Map
 {

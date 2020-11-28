@@ -15,6 +15,12 @@ namespace Racing.User
         /// List of all active players under AI control
         /// </summary>
         public static List<Player> AIPlayers { get { return FindObjectsOfType<Player>().Where(p => p.InputType == InputType.AI).ToList(); } }
+
+        /// <summary>
+        /// List of all active players under human control
+        /// </summary>
+        public static List<Player> HumanPlayers { get { return FindObjectsOfType<Player>().Where(p => p.InputType == InputType.Player).ToList(); } }
+
         /// <summary>
         /// List of all checkpoints the player has passed through in one lap
         /// </summary>
@@ -45,6 +51,7 @@ namespace Racing.User
         private int lapNumber = 1;
         private int position = 0;
         public InputType InputType;
+        public bool Finished { get; set; } = false;
 
         public override string ToString()
         {
