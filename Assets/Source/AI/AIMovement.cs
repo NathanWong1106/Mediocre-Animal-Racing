@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Racing.Map;
 using Racing.Vehicles.Components;
-using Racing.Map;
-using Racing.Util;
+using UnityEngine;
 
 namespace Racing.AI
 {
@@ -140,7 +136,7 @@ namespace Racing.AI
             steerAngle = VehicleSettings.MaxSteerAngle * steerMultiplier;
 
             //Determine throttle
-            if(brakePriority >= 0.5f)
+            if (brakePriority >= 0.5f)
             {
                 motorTorque = 0;
             }

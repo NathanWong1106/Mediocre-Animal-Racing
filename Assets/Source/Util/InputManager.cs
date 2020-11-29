@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Racing.Util
 {
@@ -10,6 +8,5 @@ namespace Racing.Util
         public static float Horizontal { get { return Input.GetAxisRaw("Horizontal"); } }
         public static bool Jump { get { return Input.GetKeyDown(KeyCode.Space); } }
         public static bool Escape { get { return Input.GetKeyDown(KeyCode.Escape); } }
-        //public static bool HandBrake { get { return Input.GetKey(KeyCode.LeftShift); } }
     }
 }

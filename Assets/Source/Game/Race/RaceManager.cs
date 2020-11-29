@@ -1,15 +1,15 @@
-﻿using Racing.User;
-using Racing.Map;
-using Racing.Util;
-using Racing.UI;
-using Racing.AI;
-using Racing.Map.Tracking;
+﻿using Racing.AI;
 using Racing.Game.Management;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
+using Racing.Map;
+using Racing.Map.Tracking;
+using Racing.UI;
 using Racing.UI.InGame;
+using Racing.User;
+using Racing.Util;
 using Racing.Vehicles.Control;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Racing.Game.Race
 {
@@ -34,7 +34,7 @@ namespace Racing.Game.Race
         private void FixedUpdate()
         {
             PositionTracker.DetermineUpdatePositions(Players);
-            
+
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Racing.Game.Race
         private void InitiateRaceStart()
         {
             CustomUnityTimer timer = gameObject.AddComponent(typeof(CustomUnityTimer)) as CustomUnityTimer;
-            timer.Initialize(Converter.SecondsToMilliseconds(secondsToStart), Converter.SecondsToMilliseconds(1), 
+            timer.Initialize(Converter.SecondsToMilliseconds(secondsToStart), Converter.SecondsToMilliseconds(1),
                 (s) => UserInterface.GetControllerAsType<InGameUIController>().SetCountdownTimer(Converter.MillisecondsToSeconds(s)), StartRace);
             timer.StartTimer();
         }
@@ -62,7 +62,7 @@ namespace Racing.Game.Race
         {
             player.Finished = true;
             Finishers.Add(player);
-            
+
             if (player.InputType == InputType.Player)
                 UserInterface.GetControllerAsType<InGameUIController>().OnPlayerFinish(player);
         }

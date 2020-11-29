@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Racing.Util
+﻿namespace Racing.Util
 {
     /// <summary>
     /// Group of conversion methods -- Add more here when necessary

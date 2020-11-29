@@ -1,9 +1,8 @@
-﻿using Racing.User;
+﻿using Racing.Game.Management;
+using Racing.Game.Storage;
 using Racing.Map;
+using Racing.User;
 using Racing.Util;
-using Racing.Game.Management;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Racing.UI.InGame
@@ -38,6 +37,16 @@ namespace Racing.UI.InGame
         public void RestartLevel()
         {
             SceneLoader.ReloadScene();
+        }
+
+        public void ReturnToMainMenu()
+        {
+            SceneLoader.LoadScene(Scenes.MainMenu);
+        }
+
+        public void QuitGame()
+        {
+            GameManager.ExitGame();
         }
 
         public void SetPositionIndicator(int position)

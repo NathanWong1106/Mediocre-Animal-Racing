@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// <see cref="https://docs.unity3d.com/Manual/WheelColliderTutorial.html"/>
@@ -17,7 +14,7 @@ namespace Racing.Vehicles.Components
     {
         public WheelCollider Left;
         public WheelCollider Right;
-        
+
         public bool Motor; // attached to a motor?
         public bool Steering; // steer angle applicable?
         public bool Braking; // brake applicable?
@@ -27,6 +24,16 @@ namespace Racing.Vehicles.Components
         [HideInInspector] public float InitialLerpAngle = 0;
         [HideInInspector] public bool IsLerping = false;
         [HideInInspector] public float TimeSinceStartLerp = 0;
+
+        /// <summary>
+        /// Fix to stop wheel collider jitter at low speeds
+        /// </summary>
+        /// <see cref="http://answers.unity.com/answers/1084280/view.html"/>
+        public static void ConfigureVehicleSubsteps(Axle axle)
+        {
+            axle.Right.ConfigureVehicleSubsteps(5, 12, 15);
+            axle.Left.ConfigureVehicleSubsteps(5, 12, 15);
+        }
 
         public static void InitAxleLerp(Axle axle, float initAngle)
         {

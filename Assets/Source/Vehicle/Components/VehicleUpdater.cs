@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Racing.Vehicles.Components
 {
@@ -19,6 +16,10 @@ namespace Racing.Vehicles.Components
         private void Start()
         {
             vehicle = GetComponent<Vehicle>();
+            foreach (Axle a in vehicle.Axles)
+            {
+                Axle.ConfigureVehicleSubsteps(a);
+            }
         }
 
         private void Update()
@@ -33,7 +34,7 @@ namespace Racing.Vehicles.Components
         /// </summary>
         private void ApplyLocalPositionToAxleVisuals()
         {
-            foreach(var axle in vehicle.Axles)
+            foreach (var axle in vehicle.Axles)
             {
                 Axle.UpdateVisuals(axle);
             }
@@ -44,7 +45,7 @@ namespace Racing.Vehicles.Components
         /// </summary>
         private void RecalculateMovementParameters()
         {
-            vehicle.Rigidbody.AddForce(Vector3.down * 300); //temp downforce?
+            //vehicle.Rigidbody.AddForce(Vector3.down * 300); //temp downforce?
             foreach (var axle in vehicle.Axles)
             {
                 if (axle.Steering)

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using Racing.Map;
 using Racing.Map.Tracking;
-using Racing.Map;
-using Racing.Util;
 using Racing.UI;
 using Racing.UI.InGame;
+using Racing.Util;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Racing.User
 {
@@ -63,7 +63,7 @@ namespace Racing.User
         /// </summary>
         public int TargetIndexForPosition()
         {
-            if(PreviousCheckpointIndex == RaceScene.CurrentTrack.Checkpoints.Count - 1 && TargetCheckpointIndex == 0)
+            if (PreviousCheckpointIndex == RaceScene.CurrentTrack.Checkpoints.Count - 1 && TargetCheckpointIndex == 0)
             {
                 return RaceScene.CurrentTrack.Checkpoints.Count;
             }

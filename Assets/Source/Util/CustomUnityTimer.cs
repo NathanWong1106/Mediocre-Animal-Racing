@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Racing.Util
@@ -44,7 +43,7 @@ namespace Racing.Util
             }
             if (Milliseconds <= 0)
             {
-                if(OnTimerFinish != null) OnTimerFinish.Invoke();
+                if (OnTimerFinish != null) OnTimerFinish.Invoke();
                 Destroy(this);
             }
             else

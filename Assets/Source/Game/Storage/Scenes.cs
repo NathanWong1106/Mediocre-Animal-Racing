@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Racing.Game.Storage
+﻿namespace Racing.Game.Storage
 {
     /// <summary>
     /// Stores all scene names in the game
@@ -10,6 +6,7 @@ namespace Racing.Game.Storage
     public static class Scenes
     {
         public static readonly string Debug = "Debug";
+        public static readonly string MainMenu = "Main Menu";
     }
 }
 

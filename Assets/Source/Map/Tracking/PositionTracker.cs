@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Racing.User;
+using System.Collections.Generic;
 using System.Linq;
-using Racing.User;
-using Racing.Map;
 using UnityEngine;
 
 namespace Racing.Map.Tracking

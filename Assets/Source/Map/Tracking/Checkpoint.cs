@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Racing.User;
+﻿using Racing.User;
 using UnityEngine;
 
 namespace Racing.Map.Tracking
@@ -15,12 +12,12 @@ namespace Racing.Map.Tracking
 
         public void AddCheckpoint(Player player)
         {
-            if(RaceScene.CurrentTrack.Checkpoints.Count == player.Checkpoints.Count && IsFinish)
+            if (RaceScene.CurrentTrack.Checkpoints.Count == player.Checkpoints.Count && IsFinish)
             {
                 player.Checkpoints.Clear();
                 player.LapNumber++;
 
-                if(player.LapNumber > RaceScene.CurrentGameManager.Laps)
+                if (player.LapNumber > RaceScene.CurrentGameManager.Laps)
                     RaceScene.CurrentGameManager.OnPlayerFinish(player);
             }
 
@@ -41,5 +38,5 @@ namespace Racing.Map.Tracking
                 }
             }
         }
-    }  
+    }
 }
