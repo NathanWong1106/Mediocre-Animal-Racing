@@ -21,9 +21,7 @@ namespace Racing.Map.Tracking
                 .ToList();
 
             for (int i = 1; i <= players.Count; i++)
-            {
                 players[i - 1].Position = i;
-            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Racing.Game.Race
         public bool RaceStarted { get; set; } = false;
 
 
-        private void Awake()
+        private void Start()
         {
             Players = FindObjectsOfType<Player>().ToList();
             RaceScene.CurrentGameManager = this;

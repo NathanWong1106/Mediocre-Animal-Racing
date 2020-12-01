@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
+using Racing.Game.Storage;
 
 namespace Racing.Game.Management
 {
     public static class GameManager
     {
+        public static Data Data;
         public static GameState CurrentGameState { get; set; }
 
         public static void PauseTimeScale(bool paused)
