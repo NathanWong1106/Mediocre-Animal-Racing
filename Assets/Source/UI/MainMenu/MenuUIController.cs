@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Racing.UI.MainMenu
 {
-    [RequireComponent(typeof(MenuUIView))]
     public class MenuUIController : MonoBehaviour, IUserInterfaceController
     {
         private MenuUIView view;
@@ -56,37 +55,26 @@ namespace Racing.UI.MainMenu
         public void SetCustomToDefault()
         {
             GameManager.Data = Data.Default;
-            view.CustomTotalPlayers.value = GameManager.Data.PlayerCount + GameManager.Data.AIPlayerCount;
+            view.CustomTotalPlayers.value = GameManager.Data.TotalPlayerCount;
             view.CustomStartingPosition.value = GameManager.Data.PlayerStartPosition;
         }
 
-        public void SetCustomFromPlayerPref(string name)
+        public void SaveConfig()
         {
-            GameManager.Data = Data.CustomRaceData.Find(d => d.Name == name);
+            view.DataManager.SaveRaceConfig(view.CustomSaveConfigInputField.text);
         }
 
-        public void SaveRaceConfig(string name)
+        public void SetCustomFromPlayerPref(Data data)
         {
-            Data data = new Data()
-            {
-                AIPlayerCount = (int)view.CustomTotalPlayers.value - 1,
-                PlayerCount = 1,
-                PlayerStartPosition = (int)view.CustomStartingPosition.value,
-                Name = name
-            };
+            GameManager.Data = Data.CustomRaceData.Find(d => d == data);
 
-            if (Data.CustomRaceData.Contains(data))
-                Data.CustomRaceData[Data.CustomRaceData.IndexOf(data)] = data;
-            else
-                Data.CustomRaceData.Add(data);
-
-            Serializer.SerializeToPlayerPrefs(Data.CustomDataKey, Data.CustomRaceData);
-            GameManager.Data = data;
+            view.CustomTotalPlayers.value = GameManager.Data.TotalPlayerCount;
+            view.CustomStartingPosition.value = GameManager.Data.PlayerStartPosition;
         }
 
-        public void RemoveRaceConfig(string name)
+        public void RemoveRaceConfig(Data data)
         {
-
+            view.DataManager.RemoveRaceConfig(data);
         }
     }
 }
