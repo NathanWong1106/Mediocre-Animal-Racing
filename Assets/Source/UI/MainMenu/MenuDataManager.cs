@@ -1,5 +1,4 @@
-﻿using Racing.Game.Management;
-using Racing.Game.Storage;
+﻿using Racing.Game.Storage;
 using Racing.Util.Serialization;
 using System;
 using UnityEngine;
@@ -10,7 +9,7 @@ namespace Racing.UI.MainMenu
     {
         private MenuUIView view;
 
-        public static event Action OnDataModified;
+        public event Action OnDataModified;
 
         private void Start()
         {
@@ -21,6 +20,9 @@ namespace Racing.UI.MainMenu
         public void ReevaluteSavedTabs()
         {
             DataTab.ReevaluateTabs(view.SavedDataComponents.transform, view.SavedCustomPrefab);
+            
+            if (OnDataModified != null) 
+                OnDataModified.Invoke();
         }
 
         public void SaveRaceConfig(string name)

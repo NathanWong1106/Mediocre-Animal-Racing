@@ -34,7 +34,7 @@ namespace Racing.UI.MainMenu
 
         public TMP_InputField CustomSaveConfigInputField;
 
-        private void Start()
+        private void Awake()
         {
             UserInterface.CurrentView = this;
             MenuViews = new List<GameObject>() { MainView, CustomView };

@@ -16,6 +16,8 @@ namespace Racing.UI.MainMenu
 
             view.CustomTotalPlayers.onValueChanged.AddListener((p) => OnCustomPlayerCountChange(p));
             view.CustomStartingPosition.onValueChanged.AddListener((p) => OnCustomStartingPositionChange(p));
+
+            OnCustomPlayerCountChange(view.CustomTotalPlayers.value);
             ReevaluateViews(view.MainView);
         }
 

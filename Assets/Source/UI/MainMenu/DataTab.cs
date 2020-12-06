@@ -33,17 +33,22 @@ namespace Racing.UI.MainMenu
         public Button Delete { get; set; }
         private TextMeshProUGUI text { get; set; }
 
-        private void Awake()
+        // Awake() does not get called on a cold start of the build. This is a fix... idk anymore
+        /// <summary>
+        /// Method must be called when a new DataTab is instantiated
+        /// </summary>
+        private void Init(Data data)
         {
             Import = transform.Find("Import").GetComponent<Button>();
             Delete = transform.Find("Delete").GetComponent<Button>();
             text = transform.Find("Name").GetComponent<TextMeshProUGUI>();
+            Data = data;
             tabs.Add(this);
         }
 
         private void UpdateVisuals()
         {
-            text.text = data.Name;
+            text.text = Data.Name;
         }
 
         private void UpdateListeners()
@@ -62,8 +67,8 @@ namespace Racing.UI.MainMenu
 
             foreach(Data data in Data.CustomRaceData)
             {
-                DataTab tab = Instantiate(prefab, parent).GetComponent<DataTab>();
-                tab.Data = data;
+                var tab = Instantiate(prefab, parent);
+                tab.GetComponent<DataTab>().Init(data);
             }
         }
 
@@ -74,6 +79,11 @@ namespace Racing.UI.MainMenu
                 Destroy(dt.gameObject);
             }
             tabs.Clear();
+        }
+
+        private void OnDestroy()
+        {
+            tabs.Remove(this);
         }
     }
 }
