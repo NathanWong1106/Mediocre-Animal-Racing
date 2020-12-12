@@ -1,6 +1,7 @@
 ﻿using Racing.Util.Serialization;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 namespace Racing.Game.Storage
 {
@@ -11,6 +12,7 @@ namespace Racing.Game.Storage
     {
         public static Data Default { get { return new Data(8, 1, 5); } }
         public static readonly string CustomDataKey = "CustomRaceData";
+        public static readonly string FilePath = Path.Combine(Application.persistentDataPath, CustomDataKey);
         public static List<Data> CustomRaceData = new List<Data>();
 
         public int AIPlayerCount { get; set; }
@@ -39,7 +41,7 @@ namespace Racing.Game.Storage
 
         public static List<Data> GetDataFromPlayerPrefs()
         {
-            List<Data> customRaceData = Deserializer.DeserializeFromPlayerPrefs<List<Data>>(CustomDataKey);
+            List<Data> customRaceData = Deserializer.DeserializeFromFile<List<Data>>(FilePath);
             return customRaceData != null ? customRaceData : new List<Data>();
         }
 

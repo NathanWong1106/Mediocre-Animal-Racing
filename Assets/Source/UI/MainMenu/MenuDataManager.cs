@@ -40,7 +40,7 @@ namespace Racing.UI.MainMenu
             else
                 Data.CustomRaceData.Add(data);
 
-            Serializer.SerializeToPlayerPrefs(Data.CustomDataKey, Data.CustomRaceData);
+            Serializer.SerializeToFile(Data.CustomDataKey, Data.CustomRaceData);
             ReevaluteSavedTabs();
         }
 
@@ -49,7 +49,7 @@ namespace Racing.UI.MainMenu
             Data toRemove = Data.CustomRaceData.Find(d => d == data);
             Data.CustomRaceData.Remove(toRemove);
 
-            Serializer.SerializeToPlayerPrefs(Data.CustomDataKey, Data.CustomRaceData);
+            Serializer.SerializeToFile(Data.CustomDataKey, Data.CustomRaceData);
             ReevaluteSavedTabs();
         }
     }

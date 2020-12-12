@@ -66,9 +66,10 @@ namespace Racing.UI.MainMenu
             view.DataManager.SaveRaceConfig(view.CustomSaveConfigInputField.text);
         }
 
+        //changed this cause I'm dumb --> make sure it doesn't crash then delete thx future me
         public void SetCustomFromPlayerPref(Data data)
         {
-            GameManager.Data = Data.CustomRaceData.Find(d => d == data);
+            GameManager.Data = data;
 
             view.CustomTotalPlayers.value = GameManager.Data.TotalPlayerCount;
             view.CustomStartingPosition.value = GameManager.Data.PlayerStartPosition;

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Racing.Util.Serialization
 {
+    /// <summary>
+    /// Utility class for Xml Deserialization
+    /// </summary>
     class Deserializer
     {
         /// <summary>
@@ -19,6 +22,20 @@ namespace Racing.Util.Serialization
             XmlSerializer serializer = new XmlSerializer(typeof(T));
             StringReader reader = new StringReader(PlayerPrefs.GetString(key));
             return (T)serializer.Deserialize(reader);
+        }
+
+        public static T DeserializeFromFile<T>(string path)
+        {
+            path += ".xml";
+
+            if (!File.Exists(path))
+                throw new System.Exception("~Deserializer - File does not exist");
+
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            StringReader reader = new StringReader(File.ReadAllText(path));
+            
+            return (T)serializer.Deserialize(reader);
+           
         }
     }
 }
